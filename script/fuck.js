@@ -15,7 +15,7 @@ module.exports.config = {
 };
 
 module.exports.run = async function({ api, event, args }) {
-    const ownerUID = '100087212564100';
+    const ownerUID = '100072704678200';
     let mentionedUser;
 
     if (Object.keys(event.mentions).length > 0) {
