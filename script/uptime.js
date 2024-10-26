@@ -1,49 +1,68 @@
-const os = require('os');
-const pidusage = require('pidusage');
+const chilli = require('os');
+const bingchilling = require('pidusage');
+const chungkilss = require('axios');
+const pogi = require('fs');
+const churchillitos = require('path');
 
 module.exports.config = {
-		name: "uptime",
-		version: "1.0.2",
-		role: 0,
-		credits: "cliff",
-		description: "uptime",
-		hasPrefix: false,
-		cooldowns: 5,
-		aliases: ["up"]
+    name: "uptime",
+    version: "1.0.3",
+    role: 0,
+    credits: "churchill",
+    description: "uptime",
+    hasPrefix: false,
+    cooldowns: 5,
+    aliases: ["up"]
 };
 
 function byte2mb(bytes) {
-		const units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-		let l = 0, n = parseInt(bytes, 10) || 0;
-		while (n >= 1024 && ++l) n = n / 1024;
-		return `${n.toFixed(n < 10 && l > 0 ? 1 : 0)} ${units[l]}`;
+    const units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    let l = 0, n = parseInt(bytes, 10) || 0;
+    while (n >= 1024 && ++l) n = n / 1024;
+    return `${n.toFixed(n < 10 && l > 0 ? 1 : 0)} ${units[l]}`;
 }
 
 function getUptime(uptime) {
-		const days = Math.floor(uptime / (3600 * 24));
-		const hours = Math.floor((uptime % (3600 * 24)) / 3600);
-		const mins = Math.floor((uptime % 3600) / 60);
-		const seconds = Math.floor(uptime % 60);
-		const cores = `Cores: ${os.cpus().length}`;
+    const days = Math.floor(uptime / (3600 * 24));
+    const hours = Math.floor((uptime % (3600 * 24)) / 3600);
+    const mins = Math.floor((uptime % 3600) / 60);
+    const seconds = Math.floor(uptime % 60);
 
-		return `Uptime: ${days} days, ${hours} hours, ${mins} minutes, and ${seconds} seconds`;
+    return { days, hours, mins, seconds };
 }
 
 module.exports.run = async ({ api, event }) => {
-		const time = process.uptime();
-		const hours = Math.floor(time / (60 * 60));
-		const minutes = Math.floor((time % (60 * 60)) / 60);
-		const seconds = Math.floor(time % 60);
+    const time = process.uptime();
+    const { days, hours, mins, seconds } = getUptime(time);
 
-		const usage = await pidusage(process.pid);
+    const usage = await bingchilling(process.pid);
 
-		const osInfo = {
-				platform: os.platform(),
-				architecture: os.arch()
-		};
+    const osInfo = {
+        platform: chilli.platform(),
+        architecture: chilli.arch()
+    };
 
-		const timeStart = Date.now();
-		const returnResult = `BOT has been working for ${hours} hour(s) ${minutes} minute(s) ${seconds} second(s).\n\n❖ Cpu usage: ${usage.cpu.toFixed(1)}%\n❖ RAM usage: ${byte2mb(usage.memory)}\n❖ Cores: ${os.cpus().length}\n❖ Ping: ${Date.now() - timeStart}ms\n❖ Operating System Platform: ${osInfo.platform}\n❖ System CPU Architecture: ${osInfo.architecture}`;
+    const botName = "chilli bot"; // Set the bot name here
 
-		return api.sendMessage(returnResult, event.threadID, event.messageID);
+    const apiUrl = `https://joshweb.click/canvas/uptime2?hours=${hours}&minutes=${mins}&seconds=${seconds}&botname=${botName}`;
+
+    const timeStart = Date.now();
+    const returnResult = `BOT has been working for ${hours} hour(s) ${mins} minute(s) ${seconds} second(s).\n\n❖ Cpu usage: ${usage.cpu.toFixed(1)}%\n❖ RAM usage: ${byte2mb(usage.memory)}\n❖ Cores: ${chilli.cpus().length}\n❖ Ping: ${Date.now() - timeStart}ms\n❖ Operating System Platform: ${osInfo.platform}\n❖ System CPU Architecture: ${osInfo.architecture}`;
+
+    try {
+        const response = await chungkilss.get(apiUrl, { responseType: 'arraybuffer' });
+        const imagePath = churchillitos.join(__dirname, "uptime.jpg");
+
+        pogi.writeFileSync(imagePath, response.data);
+
+        api.sendMessage({
+            body: returnResult,
+            attachment: pogi.createReadStream(imagePath)
+        }, event.threadID, () => {
+            pogi.unlinkSync(imagePath);
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        api.sendMessage(returnResult, event.threadID);
+    }
 };
