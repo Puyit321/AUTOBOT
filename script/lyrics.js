@@ -1,73 +1,88 @@
-const axios = require("axios");
-const { sendMessage } = require('../handles/sendMessage');
+const axios = require('axios');
+const fs = require('fs-extra');
 
-module.exports = {
-  name: "lyrics",
-  description: "Get song lyrics by title",
-  author: "chilli",
+module.exports.config = {
+  name: 'lyrics',
+  version: '1.0.0',
+  role: 0,
+  hasPrefix: true,
+  credits: 'Developer',
+  description: 'Fetches lyrics for a given song.',
+  usages: 'lyrics [song name]',
+  cooldowns: 5,
+};
 
-  async execute(senderId, args, pageAccessToken) {
-    const songTitle = args.join(" ");
+module.exports.run = async ({ api, event, args }) => {
+  const { threadID, messageID } = event;
+  const songName = args.join(" ").trim();
 
-    if (!songTitle) {
-      return sendMessage(senderId, {
-        text: `Usage: lyrics [song title]`
-      }, pageAccessToken);
-    }
+  if (!songName) {
+    return api.sendMessage("Please provide a song name!", threadID, messageID);
+  }
 
-    try {
-      const res = await axios.get(`https://markdevs69v2-679r.onrender.com/api/lyrics/song`, {
-        params: { title: songTitle }
-      });
-
-      if (!res.data || !res.data.content) {
-        throw new Error("No lyrics found for this song.");
-      }
-
-      const { title, artist, lyrics, url, song_thumbnail } = res.data.content;
-      const lyricsMessage = `🎵 *${title}* by *${artist}*\n\n${lyrics}\n\n🔗 Read more: ${url}`;
-
-      // Send the lyrics first
-      await sendChunkedMessage(senderId, lyricsMessage, pageAccessToken);
-
-      // Send the image after the lyrics
-      if (song_thumbnail) {
-        setTimeout(async () => {
-          await sendMessage(senderId, {
-            attachment: {
-              type: "image",
-              payload: {
-                url: song_thumbnail
-              }
-            }
-          }, pageAccessToken);
-        }, 1000); // Delay sending the image by 1 second to ensure the lyrics go first
-      }
-
-    } catch (error) {
-      console.error("Error retrieving lyrics:", error);
-      sendMessage(senderId, {
-        text: `Error retrieving lyrics. Please try again or check your input.`
-      }, pageAccessToken);
-    }
+  try {
+    await fetchLyrics(api, threadID, messageID, songName, 0);
+  } catch (error) {
+    console.error(`Error fetching lyrics for "${songName}":`, error);
+    api.sendMessage(`Sorry, there was an error getting the lyrics for "${songName}"!`, threadID, messageID);
   }
 };
 
-function sendChunkedMessage(senderId, text, pageAccessToken) {
-  const maxMessageLength = 2000;
-  const delayBetweenMessages = 1000; // Delay of 1 second
+const apiConfigs = [
+  {
+    name: "Primary API",
+    url: (songName) => `https://lyrist.vercel.app/api/${encodeURIComponent(songName)}`,
+  },
+  {
+    name: "Backup API 1",
+    url: (songName) => `https://samirxpikachu.onrender.com/lyrics?query=${encodeURIComponent(songName)}`,
+  },
+  {
+    name: "Backup API 2",
+    url: (songName) => `https://markdevs-last-api.onrender.com/search/lyrics?q=${encodeURIComponent(songName)}`,
+  },
+  {
+    name: "Backup API 3",
+    url: (artist, song) => `https://openapi-idk8.onrender.com/lyrical/find?artist=${encodeURIComponent(artist)}&song=${encodeURIComponent(song)}`,
+    requiresArtistAndSong: true,
+  },
+];
 
-  if (text.length > maxMessageLength) {
-    const halfLength = Math.ceil(text.length / 2);
-    const firstHalf = text.slice(0, halfLength);
-    const secondHalf = text.slice(halfLength);
+async function fetchLyrics(api, threadID, messageID, songName, attempt) {
+  if (attempt >= apiConfigs.length) {
+    api.sendMessage(`Sorry, lyrics for "${songName}" not found in all APIs!`, threadID, messageID);
+    return;
+  }
 
-    sendMessage(senderId, { text: firstHalf }, pageAccessToken);
+  const { name, url, requiresArtistAndSong } = apiConfigs[attempt];
+  let apiUrl;
 
-    setTimeout(() => {
-      sendMessage(senderId, { text: secondHalf }, pageAccessToken);
-    }, delayBetweenMessages);
-  } else {
-    sendMessage(senderId, { text }, pageAccessToken);
+  try {
+    if (requiresArtistAndSong) {
+      const [artist, title] = songName.split('-').map(s => s.trim());
+      if (!artist || !title) {
+        throw new Error("Invalid format for artist and song title");
+      }
+      apiUrl = url(artist, title);
+    } else {
+      apiUrl = url(songName);
+    }
+
+    const response = await axios.get(apiUrl);
+    const { lyrics, title, artist } = response.data;
+
+    if (!lyrics) {
+      throw new Error("Lyrics not found");
+    }
+
+    sendFormattedLyrics(api, threadID, messageID, title, artist, lyrics);
+  } catch (error) {
+    console.error(`Error fetching lyrics from ${name} for "${songName}":`, error.message || error);
+    await fetchLyrics(api, threadID, messageID, songName, attempt + 1);
   }
 }
+
+function sendFormattedLyrics(api, threadID, messageID, title, artist, lyrics) {
+  const formattedLyrics = `🎧 | Title: ${title}\n🎤 | Artist: ${artist}\n━━━━━━━━━━━━━━━━\n${lyrics}\n━━━━━━━━━━━━━━━━`;
+  api.sendMessage(formattedLyrics, threadID, messageID);
+      }
