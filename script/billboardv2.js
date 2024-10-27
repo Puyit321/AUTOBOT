@@ -32,7 +32,7 @@ const wrapText = (ctx, text, maxWidth) => {
 }
 
 module.exports.config = {
-    name: "billboard",
+    name: "billboardv2",
     version: "9.7.5",
     role: 0,
     hasPrefix: true,
