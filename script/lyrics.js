@@ -1,87 +1,73 @@
 const axios = require("axios");
-const fs = require("fs-extra");
-const path = require("path");
+const { sendMessage } = require('../handles/sendMessage');
 
-module.exports.config = {
+module.exports = {
   name: "lyrics",
-  version: "1.1.0",
-  role: 0,
-  hasPrefix: true,
-  usage: 'lyrics [song name]',
-  description: 'Get song lyrics using the provided API.',
-  credits: 'ArYAN',
-  cooldown: 5
-};
+  description: "Get song lyrics by title",
+  author: "chilli",
 
-module.exports.run = async function({ api, event, args, message }) {
-  const baseURL = 'https://c-v5.onrender.com';
-  const endpoints = {
-    lyrics: '/api/lyrics',
-    usage: '/api/usage'
-  };
-  const cacheDir = path.join(__dirname, 'cache');
+  async execute(senderId, args, pageAccessToken) {
+    const songTitle = args.join(" ");
 
-  if (!fs.existsSync(cacheDir)) {
-    fs.mkdirSync(cacheDir, { recursive: true });
-  }
-
-  try {
-    const songName = args.join(' ');
-    if (!songName) {
-      api.sendMessage("Please provide a song name!", event.threadID, event.messageID);
-      return;
+    if (!songTitle) {
+      return sendMessage(senderId, {
+        text: `Usage: lyrics [song title]`
+      }, pageAccessToken);
     }
 
-    api.setMessageReaction("⏰", event.messageID, () => {}, true);
-    const startTime = new Date().getTime();
-
-    const lyricsResponse = await axios.get(`${baseURL}${endpoints.lyrics}?songName=${encodeURIComponent(songName)}`);
-    const { lyrics, title, artist, image } = lyricsResponse.data;
-
-    if (!lyrics) {
-      api.setMessageReaction("❌", event.messageID, () => {}, true);
-      api.sendMessage("Sorry, lyrics not found. Please provide another song name!", event.threadID, event.messageID);
-      return;
-    }
-
-    const usageResponse = await axios.get(`${baseURL}${endpoints.usage}`);
-    const totalRequests = usageResponse.data.totalRequests;
-
-    const endTime = new Date().getTime();
-    const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
-
-    let messageContent = `🎶 𝗟𝗬𝗥𝗜𝗖𝗦\n\n📝| 𝗧𝗶𝘁𝗹𝗲: ${title}\n👑| 𝗔𝗿𝘁𝗶𝘀𝘁: ${artist}\n📦| 𝗧𝗼𝘁𝗮𝗹 𝗥𝗲𝗾𝘂𝗲𝘀𝘁𝘀: ${totalRequests}\n⏰| 𝗧𝗮𝗸𝗲𝗻 𝗧𝗶𝗺𝗲: ${timeTaken} sec\n\n🔎| 𝗟𝘆𝗿𝗶𝗰𝘀\n━━━━━━━━━━━━━━━\n${lyrics}`;
-
-    let attachment = null;
-    if (image) {
-      const imagePath = path.join(cacheDir, `${title.replace(/[^a-zA-Z0-9]/g, '_')}.jpg`);
-
-      const response = await axios({
-        method: 'get',
-        url: image,
-        responseType: 'stream'
+    try {
+      const res = await axios.get(`https://markdevs69v2-679r.onrender.com/api/lyrics/song`, {
+        params: { title: songTitle }
       });
 
-      const writer = fs.createWriteStream(imagePath);
-      response.data.pipe(writer);
+      if (!res.data || !res.data.content) {
+        throw new Error("No lyrics found for this song.");
+      }
 
-      await new Promise((resolve, reject) => {
-        writer.on('finish', resolve);
-        writer.on('error', reject);
-      });
+      const { title, artist, lyrics, url, song_thumbnail } = res.data.content;
+      const lyricsMessage = `🎵 *${title}* by *${artist}*\n\n${lyrics}\n\n🔗 Read more: ${url}`;
 
-      attachment = fs.createReadStream(imagePath);
+      // Send the lyrics first
+      await sendChunkedMessage(senderId, lyricsMessage, pageAccessToken);
+
+      // Send the image after the lyrics
+      if (song_thumbnail) {
+        setTimeout(async () => {
+          await sendMessage(senderId, {
+            attachment: {
+              type: "image",
+              payload: {
+                url: song_thumbnail
+              }
+            }
+          }, pageAccessToken);
+        }, 1000); // Delay sending the image by 1 second to ensure the lyrics go first
+      }
+
+    } catch (error) {
+      console.error("Error retrieving lyrics:", error);
+      sendMessage(senderId, {
+        text: `Error retrieving lyrics. Please try again or check your input.`
+      }, pageAccessToken);
     }
-
-    api.setMessageReaction("✅", event.messageID, () => {}, true);
-
-    message.reply({
-      body: messageContent,
-      attachment
-    });
-
-  } catch (error) {
-    console.error(error);
-    api.sendMessage('An error occurred while processing your request.', event.threadID, event.messageID);
   }
 };
+
+function sendChunkedMessage(senderId, text, pageAccessToken) {
+  const maxMessageLength = 2000;
+  const delayBetweenMessages = 1000; // Delay of 1 second
+
+  if (text.length > maxMessageLength) {
+    const halfLength = Math.ceil(text.length / 2);
+    const firstHalf = text.slice(0, halfLength);
+    const secondHalf = text.slice(halfLength);
+
+    sendMessage(senderId, { text: firstHalf }, pageAccessToken);
+
+    setTimeout(() => {
+      sendMessage(senderId, { text: secondHalf }, pageAccessToken);
+    }, delayBetweenMessages);
+  } else {
+    sendMessage(senderId, { text }, pageAccessToken);
+  }
+}
