@@ -1,5 +1,5 @@
 module.exports.config = {
-    name: "welcomenoti",
+    name: "welcomenotiv2",
     version: "1.0.0",
 };
 
