@@ -1,5 +1,5 @@
 module.exports.config = {
-  name: "antioutv2",
+  name: "antiout",
   version: "1.0.0"
 };
 module.exports.handleEvent = async ({
