@@ -1,63 +1,39 @@
 const axios = require('axios');
 
 module.exports.config = {
-  name: 'ai',
-  version: '1.0.0',
-  hasPermission: 0,
-  usePrefix: false,
-  aliases: ['gpt', 'openai'],
-  description: "An AI command powered by GPT-4",
-  usages: "ai [prompt]",
-  credits: 'Developer',
-  cooldowns: 3,
-  dependencies: {
-    "axios": ""
-  }
+    name: "ai2",
+    role: 0,
+    credits: "chill",
+    description: "Interact with Gemini",
+    hasPrefix: false,
+    version: "1.0.0",
+    aliases: ["gemini"],
+    usage: "gemini [reply to photo]"
 };
 
-module.exports.run = async function({ api, event, args }) {
-  const input = args.join(' ');
+module.exports.run = async function ({ api, event, args }) {
+    const prompt = args.join(" ");
 
-  if (!input) {
-    return api.sendMessage(`Please provide a question or statement after 'ai'. For example: 'ai What is the capital of France?'`, event.threadID, event.messageID);
-  }
-
-  if (input === "clear") {
-    try {
-      await axios.post('https://gaypt4ai.onrender.com/clear', { id: event.senderID });
-      return api.sendMessage("Chat history has been cleared.", event.threadID, event.messageID);
-    } catch (error) {
-      console.error(error);
-      return api.sendMessage('An error occurred while clearing the chat history.', event.threadID, event.messageID);
+    if (!prompt) {
+        return api.sendMessage('╭─『 𝗜𝗠𝗔𝗚𝗘 𝗕𝗢𝗧 』✧✧✧\n╰✧✧✧───────────✧\n╭✧✧✧───────────✧\n𝙂𝙪𝙞𝙙𝙚: This cmd only works in photo.\n╰─────────────✧✧✧\n◉ 𝚁𝙴𝙿𝙻𝚈 𝚄𝙽𝚂𝙴𝙽𝙳 𝚃𝙾 𝚁𝙴𝙼𝙾𝚅𝙴 𝚃𝙷𝙴 𝙰𝙸𝚜 𝚁𝙴𝚂𝙿𝙾𝙽𝚂𝙴.\n◉  𝚃𝙷𝙴𝚂𝙴 𝙲𝙾𝙼𝙼𝙰𝙽𝙳 𝙸𝙽𝚃𝙴𝙽𝙳𝙴𝙳 𝙵𝙾𝚁 𝙸𝙼𝙰𝙶𝙴 𝙵𝙾𝚁𝙼 𝙾𝙽𝙻𝚈!\n╭✧✧✧───────────✧\n    »𝙲𝙾𝙽𝚃𝙰𝙲𝚃 𝙰𝙸 𝙾𝚆𝙽𝙴𝚁«\nhttps://www.facebook.com/\n╰─────────────✧✧✧', event.threadID, event.messageID);
     }
-  }
 
+    if (event.type !== "message_reply" || !event.messageReply.attachments[0] || event.messageReply.attachments[0].type !== "photo") {
+        return api.sendMessage('Please reply to a photo with this command.', event.threadID, event.messageID);
+    }
 
-  let chatInfoMessageID = "";
-  
-  api.sendMessage(`🔍 "${input}"`, event.threadID, (error, chatInfo) => {
-    chatInfoMessageID = chatInfo.messageID;
-  },event.messageID);
+    const url = encodeURIComponent(event.messageReply.attachments[0].url);
+    api.sendTypingIndicator(event.threadID);
 
-  try {
-    const url = (event.type === "message_reply" && event.messageReply.attachments[0]?.type === "photo")
-      ? { link: event.messageReply.attachments[0].url }
-      : {};
+    try {
+        await api.sendMessage('💬 Recognizing...', event.threadID);
 
-    const { data } = await axios.post('https://gays-porno-api.onrender.com/chat', {
-      prompt: input,
-      customId: event.senderID,
-      ...url
-    });
+        const response = await axios.get(`https://joshweb.click/gemini?prompt=${encodeURIComponent(prompt)}&url=${url}`);
+        const description = response.data.gemini;
 
-    api.editMessage(`${data.message}`, chatInfoMessageID, (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
-
-  } catch (error) {
-    console.error(error);
-    return api.sendMessage('An error occurred while processing your request.', event.threadID, event.messageID);
-  }
+        return api.sendMessage(`╭─『 𝗜𝗠𝗔𝗚𝗘 𝗕𝗢𝗧 』✧✧✧\n╰✧✧✧───────────✧\n╭✧✧✧───────────✧\n𝘼𝙣𝙨𝙬𝙚𝙧: ${description}\n╰─────────────✧✧✧\n◉ 𝚁𝙴𝙿𝙻𝚈 '𝚄𝙽𝚂𝙴𝙽𝙳' 𝚃𝙾 𝚁𝙴𝙼𝙾𝚅𝙴 𝚃𝙷𝙴 𝙰𝙸'𝚜 𝚁𝙴𝚂𝙿𝙾𝙽𝚂𝙴.\n◉  𝚃𝙷𝙴𝚂𝙴 𝙲𝙾𝙼𝙼𝙰𝙽𝙳 𝙸𝙽𝚃𝙴𝙽𝙳𝙴𝙳 𝙵𝙾𝚁 𝙸𝙼𝙰𝙶𝙴 𝙵𝙾𝚁𝙼 𝙾𝙽𝙻𝚈!\n╭✧✧✧───────────✧\n    »𝙲𝙾𝙽𝚃𝙰𝙲𝚃 𝙰𝙸 𝙾𝚆𝙽𝙴𝚁«\nhttps://www.facebook.com/\n╰─────────────✧✧✧`, event.threadID, event.messageID);
+    } catch (error) {
+        console.error(error);
+        return api.sendMessage('╭─『 𝗜𝗠𝗔𝗚𝗘 𝗕𝗢𝗧 』✧✧✧\n╰✧✧✧───────────✧\n╭✧✧✧───────────✧\nAn error occurred while processing your request.\n╰─────────────✧✧✧\n◉ 𝚁𝙴𝙿𝙻𝚈 𝚄𝙽𝚂𝙴𝙽𝙳 𝚃𝙾 𝚁𝙴𝙼𝙾𝚅𝙴 𝚃𝙷𝙴 𝙰𝙸𝚜 𝚁𝙴𝚂𝙿𝙾𝙽𝚂𝙴.\n◉  𝚃𝙷𝙴𝚂𝙴 𝙲𝙾𝙼𝙼𝙰𝙽𝙳 𝙸𝙽𝚃𝙴𝙽𝙳𝙴𝙳 𝙵𝙾𝚁 𝙸𝙼𝙰𝙶𝙴 𝙵𝙾𝚁𝙼 𝙾𝙽𝙻𝚈!\n╭✧✧✧───────────✧\n    »𝙲𝙾𝙽𝚃𝙰𝙲𝚃 𝙰𝙸 𝙾𝚆𝙽𝙴𝚁«\nhttps://www.facebook.com/\n╰─────────────✧✧✧', event.threadID, event.messageID);
+    }
 };
