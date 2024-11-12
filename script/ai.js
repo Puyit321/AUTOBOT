@@ -7,7 +7,7 @@ module.exports.config = {
     description: "Interact with Gemini",
     hasPrefix: false,
     version: "1.0.0",
-    aliases: ["gemini"],
+    aliases: ["geminiv1"],
     usage: "gemini [reply to photo]"
 };
 
