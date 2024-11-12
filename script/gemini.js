@@ -25,7 +25,7 @@ const axios = require('axios');
 module.exports.config = {
   name: "gemini",
   role: 0,
-  credits: "developer",
+  credits: "kaizenji",
   description: "Interact with Gemini",
   hasPrefix: false,
   version: "1.0.0",
@@ -50,10 +50,10 @@ module.exports.run = async function({ api, event, args }) {
   }
 
   try {
-    const apiUrl = `https://rest-api-production-5054.up.railway.app/gemini?prompt=${encodeURIComponent(prompt)}&model=gemini-1.5-flash&uid=${userUid}` + (fileUrl ? `&file_url=${fileUrl}` : '');
-
-    const response = await axios.get(apiUrl);
-    const description = response.data.message;
+    const apiUrl = `https://kaiz-apis.gleeze.com/api/gemini-vision?q=${encodeURIComponent(prompt)}&uid=${userUid}&imageUrl=${encodeURIComponent(fileUrl)}`;
+    
+      const response = await axios.get(apiUrl);
+    const description = response.data.response;
 
     return api.sendMessage(formatFont(description), event.threadID, event.messageID);
   } catch (error) {
