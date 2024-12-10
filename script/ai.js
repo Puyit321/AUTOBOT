@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 module.exports.config = {
-    name: "aiv2",
+    name: "ai",
     version: "1.0.0",
     credits: "chill",
     description: "Interact with Llama AI",
