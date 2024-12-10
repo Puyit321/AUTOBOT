@@ -43,7 +43,7 @@ module.exports.run = async function ({ api, event, args }) {
 
         const roleplay = "";
 
-        const gpt4_api = `https://rest-api-production-5054.up.railway.app/gemini?prompt=${encodeURIComponent(prompt)}&roleplay=${encodeURIComponent(roleplay)}&uid=${event.senderID}&file_url=${encodeURIComponent(content)}`;
+        const gpt4_api = `https://kaiz-apis.gleeze.com/api/gemini-vision?q=${encodeURIComponent(prompt)}&roleplay=${encodeURIComponent(roleplay)}&uid=${event.senderID}&imageUrl=${encodeURIComponent(content)}`;
 
         const response = await axios.get(gpt4_api);
 
