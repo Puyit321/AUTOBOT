@@ -49,7 +49,7 @@ module.exports.run = async function({ api, event, args }) {
 ━━━━━━━━━━━━━━━━━━
 ${aiResponse.trim()}
 ━━━━━━━━━━━━━━━━━━
--𝙲𝚑𝚒𝚕𝚕𝚒 𝙼𝚊𝚗𝚜𝚒
+-Bogart Gwapo
         `;
 
         await api.editMessage(formattedResponse.trim(), initialMessage.messageID);
