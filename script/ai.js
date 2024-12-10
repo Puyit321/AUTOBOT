@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 module.exports.config = {
-    name: 'gemini',
+    name: 'ai',
     version: '1.0.0',
     role: 0,
     hasPrefix: true,
