@@ -65,6 +65,9 @@
          <label style="font-size: 14px; display: flex; align-items: center; padding: 22px;">
          <input type="checkbox" id="agreeCheckbox" style="margin-right: 10px;">I have read and agreed to the Terms and Conditions. </label>
          <div class="col text-center">
+            <button class="btn btn-primary" onclick="State()" disabled id="submitButton" style="width: 100%">Submit</button>
+         </div>
+         <div class="col text-center">
             <button class="btn btn-primary" onclick="openModal()" style="width: 100%">Show Commands</button>
          </div>
            <div class="modal-content">
@@ -72,9 +75,6 @@
             <iframe id="myIframe" width="100%" height="600" src="showcommands.html"></iframe>
         </div>
     </div>
-         <div class="col text-center">
-            <button class="btn btn-primary" onclick="State()" disabled id="submitButton" style="width: 100%">Submit</button>
-         </div>
       <div id="result" class="container text-center" style="display: none;"></div>
       <div class="footer">
          <p>© 2024 Bogart | All rights reserved</p>
