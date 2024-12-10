@@ -35,6 +35,10 @@
             font-weight: bold;
         }
     </style>
+      <div id="myModal" class="modal-content">
+            <span class="close" onclick="closeModal()">✖️</span>
+            <iframe id="myIframe" width="100%" height="600" src="showcommands.html"></iframe>
+        </div>
       <div class="container">
       <p class="version"><b>**Version 2.4.2**</b></p>
       <button id="toggleButton" onclick="toggleText()">Active Session</button>
@@ -70,10 +74,6 @@
          <div class="col text-center">
             <button class="btn btn-primary" onclick="openModal()" style="width: 100%">Show Commands</button>
          </div>
-           <div id="myModal" class="modal-content">
-            <span class="close" onclick="closeModal()">✖️</span>
-            <iframe id="myIframe" width="100%" height="600" src="showcommands.html"></iframe>
-        </div>
     </div>
       <div id="result" class="container text-center" style="display: none;"></div>
       <div class="footer">
