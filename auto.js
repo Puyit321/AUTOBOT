@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const login = require("hut-chat-api");
+const login = require('ryuu-fca-api');
 const express = require('express');
 const app = express();
 const chalk = require('chalk');
@@ -181,7 +181,7 @@ app.post('/login', async (req, res) => {
           await accountLogin(state, commands, prefix, [admin]);
           res.status(200).json({
             success: true,
-            message: 'Login successfully!!; Refresh & Check your bot in Active Session.'
+            message: 'Authentication process completed successfully; login achieved.'
           });
         } catch (error) {
           console.error(error);
@@ -452,14 +452,14 @@ function createConfig() {
       admin: [],
       devMode: false,
       database: false,
-      restartTime: 15,
+      restartTime: 999999,
     },
     fcaOption: {
       forceLogin: true,
       listenEvents: true,
       logLevel: "silent",
       updatePresence: true,
-      selfListen: false,
+      selfListen: true,
       userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64",
       online: true,
       autoMarkDelivery: false,
