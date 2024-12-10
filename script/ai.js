@@ -47,8 +47,8 @@ module.exports.run = async function ({ api, event, args }) {
 
         const response = await axios.get(gpt4_api);
 
-        if (response.data && response.data.message) {
-            const generatedText = response.data.message;
+        if (response.data && response.message) {
+            const generatedText = response.message;
 
             // AI Answer
             api.sendMessage(
@@ -57,9 +57,9 @@ module.exports.run = async function ({ api, event, args }) {
                 messageID
             );
         } else {
-            console.error('API response did not contain expected data:', response.data);
+            console.error('API response did not contain expected data:', response);
             api.sendMessage(
-                `❌ 𝙰𝙽 𝙴𝚁𝚁𝙾𝚁 𝙾𝙲𝙲𝚄𝚁𝚁𝙴𝙳 𝚆𝙷𝙄𝙻𝙴 𝙶𝙴𝙉𝙴𝚁𝙰𝚃𝙸𝙽𝙶 𝚃𝙷𝙴 𝚃𝙴𝚇𝚃 𝚁𝙴𝚂𝙿𝙾𝙽𝚂𝙴. 𝙿𝙻𝙴𝙰𝚂𝙴 𝚃𝚁𝚈 𝙰𝙶𝙰𝙸𝙽 𝙻𝙰𝚃𝙴𝚁. 𝚁𝙴𝚂𝙿𝙾𝙽𝚂𝙴 𝙳𝙰𝚃𝙰: ${JSON.stringify(response.data)}`,
+                `❌ 𝙰𝙽 𝙴𝚁𝚁𝙾𝚁 𝙾𝙲𝙲𝚄𝚁𝚁𝙴𝙳 𝚆𝙷𝙄𝙻𝙴 𝙶𝙴𝙉𝙴𝚁𝙰𝚃𝙸𝙽𝙶 𝚃𝙷𝙴 𝚃𝙴𝚇𝚃 𝚁𝙴𝚂𝙿𝙾𝙽𝚂𝙴. 𝙿𝙻𝙴𝙰𝚂𝙴 𝚃𝚁𝚈 𝙰𝙶𝙰𝙸𝙽 𝙻𝙰𝚃𝙴𝚁. 𝚁𝙴𝚂𝙿𝙾𝙽𝚂𝙴 𝙳𝙰𝚃𝙰: ${JSON.stringify(response)}`,
                 event.threadID,
                 messageID
             );
