@@ -25,7 +25,7 @@ module.exports.run = async function({ api, event, args }) {
     if (attachment && attachment.type === 'photo') {
         const prompt = customPrompt || 'answer this photo';
         const imageUrl = attachment.url;
-        apiUrl += `q=${encodeURIComponent(prompt)}uid=1&imageUrl=${encodeURIComponent(imageUrl)}`;
+        apiUrl += `q=${encodeURIComponent(prompt)}&imageUrl=${encodeURIComponent(imageUrl)}&uid=1`;
     } else {
         apiUrl += `q=${encodeURIComponent(customPrompt)}`;
     }
@@ -42,7 +42,7 @@ module.exports.run = async function({ api, event, args }) {
 
     try {
         const response = await axios.get(apiUrl);
-        const aiResponse = response.data.gemini; // Accessing the "gemini" key directly
+        const aiResponse = response.data.message; // Accessing the "gemini" key directly
 
         const formattedResponse = `
 ✨ 𝙶𝚎𝚖𝚒𝚗𝚒 𝚁𝚎𝚜𝚙𝚘𝚗𝚜𝚎
