@@ -25,10 +25,10 @@ module.exports.run = async function ({ api, event, args }) {
         });
 
         try {
-            const response = await axios.get(`https://playground.y2pheq.me/gpt4?prompt=${encodeURIComponent(q)}&uid=100`);
-            const answer = response.data.result;
+            const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gpt-4o?q=${encodeURIComponent(q)}&uid=100`);
+            const answer = response.data.response;
 
-            const formattedResponse = `${answer}`;
+            const formattedResponse = `•| 𝙱𝙾𝙶𝙰𝚁𝚃 𝙰𝙸 𝙱𝙾𝚃 |•\n\n${answer}`\n\•| 𝙲𝚁𝙴𝙰𝚃𝙴𝙳 𝙱𝚈 𝙱𝙾𝙶𝙰𝚁𝚃 𝙼𝙰𝙶𝙰𝙻𝙿𝙾𝙺 |•;
 
             await api.editMessage(formattedResponse, initialMessage.messageID);
         } catch (error) {
