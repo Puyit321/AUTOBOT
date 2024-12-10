@@ -42,7 +42,7 @@ module.exports.run = async function({ api, event, args }) {
 
     try {
         const response = await axios.get(apiUrl);
-        const aiResponse = response.data.message; // Accessing the "gemini" key directly
+        const aiResponse = response.data.response; // Accessing the "gemini" key directly
 
         const formattedResponse = `
 ✨ 𝙶𝚎𝚖𝚒𝚗𝚒 𝚁𝚎𝚜𝚙𝚘𝚗𝚜𝚎
