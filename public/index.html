@@ -7,34 +7,6 @@
       <link rel="stylesheet" href="styles.css">
    </head>
    <body>
-       <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content {
-            background-color: #000;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-    </style>
       <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">✖️</span>
@@ -73,9 +45,6 @@
          <div class="col text-center">
             <button class="btn btn-primary" onclick="State()" disabled id="submitButton" style="width: 100%">Submit</button>
          </div>
-         <div class="col text-center">
-            <button class="btn btn-primary" onclick="openModal()" style="width: 100%">Show Commands</button>
-         </div>
     </div>
       <div id="result" class="container text-center" style="display: none;"></div>
       <div class="footer">
@@ -88,23 +57,6 @@
       <iframe style="display: none;" width="573" height="322" src="https://www.youtube.com/embed/lXa_TP_Op4E?rel=0&amp;autoplay=1" title="DJ CUMA MANTAN X DULU SOMETHING NEW SLOWED ANALOG || DJ FERNZ BASS" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
       <script src="script.js"></script>
        <script>
-        const modal = document.getElementById('myModal');
-
-        function openModal() {
-            modal.style.display = 'block';
-        }
-
-        function closeModal() {
-            modal.style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        };
-    </script>
-      <script>
       async function listOfAi() {
       const userOnline = document.getElementById("user_online");
       try {
