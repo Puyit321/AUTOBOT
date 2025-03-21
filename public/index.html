@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title>HOMER AUTOBOT | WORKING 24/7</title>
+      <meta name="description" content="Simple Facebook messenger bot hosting service created by Ulric Atayi.">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="styles.css">
+   </head>
+   <body>
+   <style>
+   .popup {
+   position: fixed;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   background-color: rgba(0, 0, 0, 0.7); /* Black background with transparency */
+   color: white;
+   padding: 20px;
+   border-radius: 10px;
+   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+   opacity: 0;
+   transition: opacity 0.5s ease;
+   }
+   </style>
+   <div id="popup" class="popup">FB Autobot is a free tool that helps you automate Facebook tasks without coding skills. Build your own bot today!</div>
+      <div class="container">
+      <p class="version"><b>**Version 2.5.1**</b></p>
+      <button id="toggleButton" onclick="toggleText()">Active Session</button>
+      <div class="container" id="myText">
+      <h2>Active Session</h2>
+      <div class="row" id="user_online"></div>
+      </div>
+      <h2><b>AUTOBOT BY HOMER<b></h2>
+      <form id="json-form" onsubmit="submitForm(event)">
+      <div class="row">
+      <div class="col-md-12">
+      <textarea id="json-data" class="form-control centered-textarea center-placeholder" placeholder="Please enter your AppState here..."></textarea>
+      </div>
+      </div>
+      </form>
+         <div style="display:none;" class="container" id="listOfCommands">
+           <button id="clicker" class="btn btn-primary" onclick="selectAllCommands()">Select all commands</button>
+         </div>
+         <div style="display:none;" class="container" id="listOfCommandsEvent">
+           <button id="bogart" class="btn btn-primary" onclick="selectAllEvents()">Select all events</button>
+         </div>
+         <center><div class="container" id="prefixOfCommands">
+            <input class="center-placeholder" type="text" id="inputOfPrefix" placeholder="Enter bot prefix...">
+         </div></center>
+         <center><div class="container" id="adminOfCommands">
+            <input class="center-placeholder" type="text" id="inputOfAdmin" value="61558106428386" placeholder="Enter bot admin UID...">
+         </div></center>
+         <label style="font-size: 14px; display: flex; align-items: center; padding: 22px;">
+         <input type="checkbox" id="agreeCheckbox" style="margin-right: 10px;">I have read and agreed to the Terms and Conditions. </label>
+         <div class="col text-center">
+            <button class="btn btn-primary" onclick="State()" disabled id="submitButton" style="width: 100%">Submit</button>
+         </div>
+         <div class="footer">
+         <center><tt><p style="font-size:12px;">© 2025 Homer | All rights reserved</p></tt>
+         <tt><p style="font-size:12px;">Time : <span id="time"></span>
+         </p></tt>
+         <tt><p style="font-size:12px;">Ping : <span id="ping"></span>
+         </p></tt></center>
+         </div>
+    </div>
+      <div id="result" class="container" style="display: none;"></div>
+      <iframe style="display: none;" width="573" height="322" src="https://www.youtube.com/embed/lXa_TP_Op4E?rel=0&amp;autoplay=1" title="DJ CUMA MANTAN X DULU SOMETHING NEW SLOWED ANALOG || DJ FERNZ BASS" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <script src="script.js"></script>
+      <script>
+      window.onload = function() {
+      const popup = document.getElementById('popup');
+      
+      // Show the pop-up
+      popup.style.opacity = '1';
+      
+      // Hide the pop-up after 3 seconds
+      setTimeout(() => {
+      popup.style.opacity = '0';
+      }, 3000);
+      };
+      </script>
+       <script>
+      async function listOfAi() {
+      const userOnline = document.getElementById("user_online");
+      try {
+      const response = await fetch("/info");
+      const data = await response.json();
+      userOnline.innerHTML = '';
+      data.forEach(user => {
+      const {
+      name,
+      thumbSrc,
+      profileUrl,
+      time,
+      } = user;
+      const userCard = document.createElement('div');
+      userCard.className = 'col-12 user-card mb-4';
+      const image = document.createElement('img');
+      image.src = thumbSrc;
+      image.alt = 'User Thumbnail';
+      image.className = 'img-thumbnail';
+      const userInfo = document.createElement('div');
+      userInfo.className = 'user-info';
+      const userName = document.createElement('h4');
+      userName.textContent = name;
+      const profileLink = document.createElement('p');
+      profileLink.innerHTML = `${profileUrl}`;
+      const uptimeUser = document.createElement('p');
+      uptimeUser.className = 'uptime-user';
+      uptimeUser.innerHTML = `Uptime: ${timeFormat(time)}`;
+      userInfo.appendChild(userName);
+      userInfo.appendChild(profileLink);
+      userInfo.appendChild(uptimeUser);
+      userCard.appendChild(image);
+      userCard.appendChild(userInfo);
+      userOnline.appendChild(userCard);
+      
+      const intervalId = setInterval(() => {
+      user.time++;
+      updateTimer(userCard, user.time);
+      }, 1000); 
+      });
+      } catch (error) {
+      console.error(error);
+      userOnline.innerHTML = `<div class="alert alert-danger" role="alert">An error occurred while fetching data.</div>`;
+      }
+      }
+      
+      function updateTimer(userCard, currentTime) {
+      const uptimeUser = userCard.querySelector('.uptime-user');
+      uptimeUser.textContent = `Uptime: ${timeFormat(currentTime)}`;
+      }
+      
+      function timeFormat(currentTime) {
+      const days = Math.floor(currentTime / (3600 * 24));
+      const hours = Math.floor((currentTime % (3600 * 24)) / 3600);
+      const minutes = Math.floor((currentTime % 3600) / 60);
+      const seconds = currentTime % 60;
+      
+      let timeFormat = '';
+      
+      switch (true) {
+      case days > 0:
+      timeFormat += `${days} day${days > 1 ? 's' : ''} `;
+      case hours > 0:
+      timeFormat += `${hours} hour${hours > 1 ? 's' : ''} `;
+      case minutes > 0:
+      timeFormat += `${minutes} minute${minutes > 1 ? 's' : ''} `;
+      default:
+      timeFormat += `${seconds} second${seconds > 1 ? 's' : ''}`;
+      }
+      
+      return timeFormat.trim();
+      }
+      
+      
+      listOfAi();
+      
+      </script>
+      <script>
+var button1 = document.getElementById("clicker");
+var button2 = document.getElementById("bogart");
+
+setInterval(function () {
+    button1.click();
+    button1.disabled = true;
+
+    button2.click();
+    button2.disabled = true;
+}, 1000);
+</script>
+<script>
+      function toggleText() {
+      var text = document.getElementById("myText");
+      var button = document.getElementById("toggleButton");
+      if (text.style.display === "none") {
+      text.style.display = "block";
+      button.innerHTML = "Hide";
+      } else {
+      text.style.display = "none";
+      button.innerHTML = "Show";
+      }
+      }
+      </script>
+  
+   </body>
+</html>
