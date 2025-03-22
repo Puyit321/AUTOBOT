@@ -16,12 +16,12 @@ module.exports.run = async function({ api, event }) {
   api.sendMessage('🙏Fetching a random Bible verse, please wait...', event.threadID, event.messageID);
 
   try {
-    const response = await axios.get('https://joshweb.click/bible');
-    const verse = response.data.verse;
+    const response = await axios.get('https://kaiz-apis.gleeze.com/api/bible');
+    const verse = response.data.text;
     const reference = response.data.reference;
 
     const message = {
-      body: `📖 Here is a random Bible verse for you:\n\n*${verse}*\n\n— _${reference}_`,
+      body: `📖 Here is a random Bible verse for you:\n\n*${text}*\n\n— _${reference}_`,
       mentions: [
         {
           tag: `@${event.senderID}`,
